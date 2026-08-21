@@ -1,6 +1,6 @@
 ---
 name: pre-review
-description: Code review rigoroso do que está na worktree pronto pra commit, e correção automática do que for mecânico. Roda inteiro num subagente Sonnet pra ficar barato sem perder achado real — o modelo principal só despacha e repassa o resultado. Detecta sozinha se a mudança é front (`lefandom.web`) ou back (`lefandom.api`), que são repos git separados, e aplica as regras do lado correspondente (`/pagina` e `/componente` no front, `/modulo` e `AGENTS.md` no back). Procura violação de padrão, arquivo/código morto, lógica mal resolvida e duplicação de helper/componente/schema/constante; corrige o que é mecânico e reporta o que exige decisão. NUNCA roda lint, prettier, build, tsc, teste, migration ou servidor. NÃO é auto-invocável — só usar quando o usuário mencionar explicitamente esta skill/o comando `/pre-review`, ou pedir review do que está pra commitar.
+description: Code review rigoroso do que está na worktree pronto pra commit, e correção automática do que for mecânico. Roda inteiro num subagente Sonnet pra ficar barato sem perder achado real — o modelo principal só despacha e repassa o resultado. Detecta sozinha se a mudança é front (`<repo-web>`) ou back (`<repo-api>`), que são repos git separados, e aplica as regras do lado correspondente (`/pagina` e `/componente` no front, `/modulo` e `AGENTS.md` no back). Procura violação de padrão, arquivo/código morto, lógica mal resolvida e duplicação de helper/componente/schema/constante; corrige o que é mecânico e reporta o que exige decisão. NUNCA roda lint, prettier, build, tsc, teste, migration ou servidor. NÃO é auto-invocável — só usar quando o usuário mencionar explicitamente esta skill/o comando `/pre-review`, ou pedir review do que está pra commitar.
 ---
 
 # pre-review
@@ -13,7 +13,7 @@ Chame o `Agent` **uma vez**, com `subagent_type: "general-purpose"`, `model: "so
 
 > Você é revisor de código deste monorepo. Faça o review do que está na worktree e corrija o que for mecânico.
 >
-> **Alvo:** `<lefandom.web | lefandom.api | ambos>`. Raiz do monorepo: `<caminho absoluto>`.
+> **Alvo:** `<<repo-web> | <repo-api> | ambos>`. Raiz do monorepo: `<caminho absoluto>`.
 >
 > **Passo 1 — leia as regras.** Leia `.claude/skills/pre-review/checklist.md`. Ele tem o procedimento de coleta, os checklists por lado, o que corrigir sozinho e o formato de saída. Siga à risca.
 >

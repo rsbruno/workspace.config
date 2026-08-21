@@ -1,11 +1,11 @@
 ---
 name: modulo
-description: Cria um novo módulo NestJS neste projeto (lefandom.api) seguindo exatamente o padrão DDD/Clean Architecture já estabelecido — CQRS, camadas domain/infrastructure/presentation isoladas, DTOs separados de raw external shapes, infra agrupada por provider. NÃO é auto-invocável — só usar quando o usuário mencionar explicitamente esta skill/o comando `/modulo`, nunca por inferência de "cria um módulo"/"nova feature" sozinho.
+description: Cria um novo módulo NestJS neste projeto (<repo-api>) seguindo exatamente o padrão DDD/Clean Architecture já estabelecido — CQRS, camadas domain/infrastructure/presentation isoladas, DTOs separados de raw external shapes, infra agrupada por provider. NÃO é auto-invocável — só usar quando o usuário mencionar explicitamente esta skill/o comando `/modulo`, nunca por inferência de "cria um módulo"/"nova feature" sozinho.
 ---
 
 # modulo
 
-Gera um módulo novo em `src/modules/v1/<dominio>/<modulo>/` replicando **exatamente** a estrutura de `src/modules/v1/catalog/categories` (leitura/query) e, quando houver escrita, `src/modules/v1/identity/o-auth/commands` (comando). Antes de escrever qualquer arquivo, releia esses dois diretórios reais no projeto para confirmar que o padrão não mudou — esta skill descreve o padrão, os arquivos-fonte são a verdade.
+Gera um módulo novo em `src/modules/v1/<dominio>/<modulo>/` replicando **exatamente** a estrutura de um módulo de leitura (query) já existente no projeto e, quando houver escrita, de um módulo de escrita (command) já existente. Antes de escrever qualquer arquivo, releia esses diretórios reais no projeto para confirmar que o padrão não mudou — esta skill descreve o padrão, os arquivos-fonte são a verdade.
 
 **Prioridade: agilidade.** Sem validação, sem rodar nada, sem passo extra. Reúna a informação mínima, escreva os arquivos, registre no `app.module.ts`, pare. O usuário confere/roda quando quiser.
 
@@ -15,7 +15,7 @@ Gera um módulo novo em `src/modules/v1/<dominio>/<modulo>/` replicando **exatam
 - **Nome do módulo**: plural, kebab-case (ex: `categories`, `orders`). Vira o nome da pasta, do `*.module.ts`, do `*.controller.ts`.
 - **Entidade**: nome singular em PascalCase (ex: `Category`) — usado no DTO de domínio e nos nomes de classe.
 - **Operações**: precisa de queries (leitura), commands (escrita), ou ambos?
-- **Fonte de dado**: integra um provider externo (ex: Nuvemshop, um novo SaaS) ou é backed por banco (Drizzle, via repository)? Isso define o conteúdo de `infrastructure/`.
+- **Fonte de dado**: integra um provider externo (ex: um novo SaaS de terceiro) ou é backed por banco (Drizzle, via repository)? Isso define o conteúdo de `infrastructure/`.
 - **Rota pública ou autenticada**: por padrão as rotas exigem JWT (guard global). Só use `@Public()` se o usuário disser explicitamente que a rota é pública.
 
 Nunca invente nome de provider, campo, ou endpoint — pergunte se não estiver claro.
@@ -64,23 +64,23 @@ src/modules/v1/<dominio>/<modulo>/
 | `<modulo>.controller.ts` | Camada de apresentação (HTTP). Recebe request, valida via DTO, delega pro `QueryBus`/`CommandBus`, devolve resposta. Zero regra de negócio, zero chamada direta a service/provider. | lógica de mapeamento, chamada a `infrastructure/` direto |
 | `<modulo>.module.ts` | Composition root do módulo: declara `providers`, `controllers`, `imports`, `exports`. Fiação, nada de lógica. | lógica de negócio, imports de outro módulo além do que ele expõe |
 | `dtos/` (raiz do módulo) | Contrato de **domínio** do módulo — o formato de dado que ele expõe/entende, independente de onde o dado veio. É o que o `controller` devolve. Também é onde mora o mapeamento raw→domínio, via `@Transform` (ver seção "Mapeamento raw → domínio" abaixo). | shape cru de provider externo puro sem decorator |
-| `infrastructure/<provider>/` | Tudo que é **detalhe técnico de UM provider/fonte externa específica**, isolado do resto do módulo. Se trocar o provider amanhã, só essa pasta muda — nada fora dela deveria saber que a Nuvemshop existe. Uma pasta por provider (`infrastructure/nuvemshop/`, `infrastructure/database/`), nunca misturados. | qualquer coisa que o `controller` ou outro módulo importe diretamente |
+| `infrastructure/<provider>/` | Tudo que é **detalhe técnico de UM provider/fonte externa específica**, isolado do resto do módulo. Se trocar o provider amanhã, só essa pasta muda — nada fora dela deveria saber que aquele provider existe. Uma pasta por provider (`infrastructure/{provider}/`, `infrastructure/database/`), nunca misturados. | qualquer coisa que o `controller` ou outro módulo importe diretamente |
 | `infrastructure/<provider>/dtos/` | Shape **cru**, exatamente como o provider devolve (campo `snake_case`, sem decorator nenhum). Não é contrato do módulo, é só tipagem de resposta externa. | `@ApiProperty`, `@Expose`, qualquer decorator |
-| `infrastructure/<provider>/services/` | Faz a chamada real (HTTP/SDK/query), aplica cache/log/try-catch, converte o resultado cru pro dto de domínio via `plainToInstance` (ver seção "Mapeamento raw → domínio"), e retorna já no formato de `dtos/`. É o único lugar que conhece o client/token de injeção do provider. **Um service = um caso de uso = um arquivo.** `findAll` e `findBySlug` nunca vivem na mesma classe, mesmo que pareçam simples — sempre `NuvemshopFindAll{Entidades}Service` e `NuvemshopFind{Entidade}By{Prop}Service` separados, cada um com seu próprio `@Injectable()`. Vale pra qualquer service criado nessa skill, não só integração com provider externo. | função de mapeamento manual, regra de apresentação, mais de um método público/caso de uso na mesma classe |
+| `infrastructure/<provider>/services/` | Faz a chamada real (HTTP/SDK/query), aplica cache/log/try-catch, converte o resultado cru pro dto de domínio via `plainToInstance` (ver seção "Mapeamento raw → domínio"), e retorna já no formato de `dtos/`. É o único lugar que conhece o client/token de injeção do provider. **Um service = um caso de uso = um arquivo.** `findAll` e `findBySlug` nunca vivem na mesma classe, mesmo que pareçam simples — sempre `{Provider}FindAll{Entidades}Service` e `{Provider}Find{Entidade}By{Prop}Service` separados, cada um com seu próprio `@Injectable()`. Vale pra qualquer service criado nessa skill, não só integração com provider externo. | função de mapeamento manual, regra de apresentação, mais de um método público/caso de uso na mesma classe |
 | `queries/<nome>/` | Um **use case por trás de um `@Get`** (CQRS): `.query.ts` (dados de entrada), `.handler.ts` (orquestra — chama o service e retorna), `.dto.ts` (opcional, query params validados). Um use case = uma pasta. Classificação é pelo verbo HTTP, não por "será que muda estado" — ver seção 3.2. | lógica de mapeamento raw→domínio, chamada direta ao client externo |
 | `commands/<nome>/` | Um **use case por trás de `@Post`/`@Put`/`@Patch`/`@Delete`** (CQRS), mesmo quando não persiste nada (ex: calculadora que só lê e devolve um número, mas recebe body). `.dto.ts` aqui carrega Payload (validação de entrada) + Result (shape de saída) no mesmo arquivo. | leitura por `@Get` (isso é query, ver seção 3.2) |
 | `webhooks/commands/<nome>/` | Handler de evento recebido de **provider externo** via HTTP POST (ex: MP, Stripe). Sempre é um Command (POST recebido). O controller delega ao `CommandBus`; o handler valida a assinatura (HMAC), re-confirma o estado com o provider antes de qualquer write, e atualiza o DB. `.command.ts` carrega o payload cru do provider (headers + body). Sem `.dto.ts` de validação de entrada via `class-validator` — a verificação é feita manualmente no handler (HMAC). | lógica de negócio fora do handler, chamada direta a repositórios de outros módulos |
 
 ## Mapeamento raw → domínio: `plainToInstance` + `@Transform`, **não** helper de módulo
 
-**Evite helper ao máximo.** O módulo **não tem** `infrastructure/<provider>/helpers/`. O mapeamento raw→domínio vive como `@Transform` direto nos campos do dto de `dtos/{entidade}.dto.ts` (ver template 4.1), e o service chama `plainToInstance({Entidade}Dto, raw, { excludeExtraneousValues: true })` em vez de uma função `map...` escrita à mão (ver template 4.4). Referência real: `src/modules/v1/catalog/products/dtos/product.dto.ts` e `src/modules/v1/catalog/categories/dtos/category.dto.ts`.
+**Evite helper ao máximo.** O módulo **não tem** `infrastructure/<provider>/helpers/`. O mapeamento raw→domínio vive como `@Transform` direto nos campos do dto de `dtos/{entidade}.dto.ts` (ver template 4.1), e o service chama `plainToInstance({Entidade}Dto, raw, { excludeExtraneousValues: true })` em vez de uma função `map...` escrita à mão (ver template 4.4). Procure um dto já existente no projeto com `@Transform` pra usar de referência.
 
 Regras de reuso, sem exceção:
 
-- **Nunca recrie lógica de transformação que já existe em algum lugar global.** Antes de escrever qualquer `@Transform` novo, procure em `src/infrastructure/helpers/` (genérico, qualquer módulo — ex: `parsePriceToCents`) e em `src/infrastructure/services/<provider>/helpers/` (específico do provider, qualquer módulo desse provider — ex: `pickLocalizedText`, `mapNuvemshopIdName`) e reaproveite se existir.
+- **Nunca recrie lógica de transformação que já existe em algum lugar global.** Antes de escrever qualquer `@Transform` novo, procure em `src/infrastructure/helpers/` (genérico, qualquer módulo — ex: `parsePriceToCents`) e em `src/infrastructure/services/<provider>/helpers/` (específico do provider, qualquer módulo desse provider — ex: `pickLocalizedText`, `mapProviderIdName`) e reaproveite se existir.
 - **Helper só existe em nível de infraestrutura global**, nunca dentro de um módulo (`src/modules/...`). Se a transformação for específica de UM campo de UMA entidade e não repete em lugar nenhum, ela fica inline no `@Transform` mesmo, sem virar arquivo. Só vira helper global quando **mais de um lugar** (módulos diferentes, ou mais de um campo do mesmo módulo) precisa da mesma lógica — nesse caso sobe pra `src/infrastructure/helpers/` (se for genérico) ou `src/infrastructure/services/<provider>/helpers/` (se for específico do provider), nunca fica local ao módulo.
 - **Nunca importe algo de dentro de outro módulo** (ex: `categories/infrastructure/...` importado direto por `orders/`), **e nunca injete `Repository`/`Service` de outro módulo direto, mesmo que ele esteja no `exports`**. Cross-module é sempre via `QueryBus`/`CommandBus` — ver seção 2.5.
-- Se for **backed por banco** em vez de provider externo, `infrastructure/database/` segue o padrão de `src/modules/v1/identity/users/infrastructure/database/drizzle/*-query.repository.ts` (repository no lugar de service — mesma responsabilidade de isolar o acesso a dado concreto, nome diferente porque a origem é banco, não API).
+- Se for **backed por banco** em vez de provider externo, `infrastructure/database/` segue o padrão de um repository já existente no projeto (`*-query.repository.ts`) — repository no lugar de service, mesma responsabilidade de isolar o acesso a dado concreto, nome diferente porque a origem é banco, não API.
 
 **Tipos de payload no command repository derivam do schema Drizzle — nunca interfaces manuais (regra fixa):**
 
@@ -114,7 +114,7 @@ updatedAt: timestamp('updated_at').notNull().defaultNow(),
 
 ### Enum
 
-Criar `<modulo>-status.enum.ts` dentro de `domain/enums/` (ver seção "domain/" abaixo) — nunca solto na raiz do módulo, mesmo que seja o único arquivo de `domain/` que o módulo tenha. Referência real: `src/modules/v1/finance/payments/domain/enums/payment-status.enum.ts`.
+Criar `<modulo>-status.enum.ts` dentro de `domain/enums/` (ver seção "domain/" abaixo) — nunca solto na raiz do módulo, mesmo que seja o único arquivo de `domain/` que o módulo tenha. Procure um enum de status já existente em `domain/enums/` de outro módulo pra usar de referência.
 
 ```ts
 export enum <Entidade>Status {
@@ -175,8 +175,8 @@ Regra: ao escrever um `SELECT`/`join` que passa por mais de uma tabela com soft 
 
 **O que entra em `domain/`** — só os dois tipos de arquivo abaixo, cada um na sua subpasta, nada solto direto em `domain/`:
 
-1. **`domain/enums/`** — enums de entidade (`<entidade>-status.enum.ts`, `<entidade>-origin.enum.ts`, etc), estado do negócio, zero dependência de framework/banco/provider. Referência real: `src/modules/v1/finance/payments/domain/enums/payment-status.enum.ts`.
-2. **`domain/gateways/`** — Ports (`<algo>-gateway.interface.ts`, `<algo>-provider.interface.ts`), a interface que define o que o módulo *precisa* de uma dependência externa, junto com o token de injeção (`Symbol`) na mesma linha de export. Referência real: `src/modules/v1/finance/payments/domain/gateways/payment-gateway.interface.ts`.
+1. **`domain/enums/`** — enums de entidade (`<entidade>-status.enum.ts`, `<entidade>-origin.enum.ts`, etc), estado do negócio, zero dependência de framework/banco/provider. Procure um enum de status já existente em `domain/enums/` de outro módulo pra usar de referência.
+2. **`domain/gateways/`** — Ports (`<algo>-gateway.interface.ts`, `<algo>-provider.interface.ts`), a interface que define o que o módulo *precisa* de uma dependência externa, junto com o token de injeção (`Symbol`) na mesma linha de export. Procure um gateway já existente em `domain/gateways/` de outro módulo pra usar de referência.
 
 Um enum entra em `domain/enums/`, um Port entra em `domain/gateways/` — nunca solto direto em `domain/`, mesmo quando o módulo só tem um arquivo de cada tipo.
 
@@ -290,7 +290,7 @@ Na prática:
 
 ## 2.2 Identidade do usuário — sempre `userId` interno via `@CurrentUser()` (regra fixa do projeto)
 
-`authenticatorId` (Cognito sub) **só existe** dentro de `src/modules/v1/identity/o-auth/` e `src/configs/auth/`. Em qualquer outro lugar é proibido.
+`authenticatorId` (id do provider de auth externo) **só existe** dentro de `src/modules/v1/identity/o-auth/` e `src/configs/auth/`. Em qualquer outro lugar é proibido.
 
 Controllers autenticados usam o decorator `@CurrentUser()` para acessar o `userId` interno já resolvido pelo `JwtAuthGuard`:
 
@@ -457,7 +457,7 @@ if (order.status >= OrderStatus.ADDRESS_SELECTED) {
 await this.commandBus.execute(new InvalidateOrderProgressCommand(order.id, order.status, remainingItemsCount));
 ```
 
-Referência real do projeto: `src/modules/v1/sales/orders/commands/invalidate-order-progress/` (regra de invalidar frete/status quando itens mudam, reusada por `add-items` e `update-item-quantity`) e `src/modules/v1/sales/orders/commands/remove-order-item/` (regra completa de excluir item — delete + recalcular progresso via `InvalidateOrderProgressCommand` — reusável por qualquer fluxo que precise remover item, hoje usado por `update-item-quantity` quando `quantity <= 0`).
+Exemplo do padrão: um command que reaproveita a regra de outro command já existente (ex: um fluxo de "atualizar quantidade" que, ao zerar, chama o command de "remover item" em vez de duplicar a lógica de exclusão) — procure um caso assim já existente no projeto pra usar de referência.
 
 ## 3. Nomenclatura (regra fixa do projeto, ver AGENTS.md)
 
@@ -500,7 +500,7 @@ throw new BusinessException(CodeExceptions.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND
 throw new BusinessException(CodeExceptions.ORDER_ITEMS_REQUIRED); // 400 implícito
 ```
 
-**Antes de lançar qualquer erro, confira `src/infrastructure/exceptions/`** — pode já existir uma exception pronta pro cenário (ex: `business-client-exception.exception.ts` → `BusinessException`, o caso de uso padrão pra erro de negócio; outras pastas ali cobrem cenários específicos como fluxo AWS/Cognito ou validação de schema). Reaproveita a que já existe em vez de inventar uma nova. **Se nenhuma exception existente cobrir o cenário, para e avisa o usuário** — não force `BusinessException` num caso que não é erro de negócio nem crie uma exception nova por conta própria sem confirmar.
+**Antes de lançar qualquer erro, confira `src/infrastructure/exceptions/`** — pode já existir uma exception pronta pro cenário (ex: `business-client-exception.exception.ts` → `BusinessException`, o caso de uso padrão pra erro de negócio; outras pastas ali cobrem cenários específicos como fluxo de auth de provider externo ou validação de schema). Reaproveita a que já existe em vez de inventar uma nova. **Se nenhuma exception existente cobrir o cenário, para e avisa o usuário** — não force `BusinessException` num caso que não é erro de negócio nem crie uma exception nova por conta própria sem confirmar.
 
 **Passos pra cada erro novo de um módulo:**
 1. Adicionar uma entrada em `src/infrastructure/enums/code-exceptions.enum.ts`, prefixo de 3 letras do domínio + módulo + número sequencial de 4 dígitos, seguindo o padrão já usado (`idt:oauth:0001` pra identity/oauth) — ex: `ORDER_NOT_FOUND = 'com:orders:0001'` pra commerce/orders. Nunca reaproveitar prefixo de outro domínio.
@@ -557,18 +557,18 @@ Text: message.text ? { Data: message.text, Charset: 'UTF-8' } : undefined,
 - `@Get(...)` → sempre `Query`/`QueryHandler`/`QueryBus`, pasta `queries/`.
 - `@Post(...)`, `@Put(...)`, `@Patch(...)`, `@Delete(...)` → sempre `Command`/`CommandHandler`/`CommandBus`, pasta `commands/`.
 
-Isso vale mesmo quando o endpoint não persiste nada (ex: uma calculadora de preço/frete que só lê da Nuvemshop e devolve um número). Se o cliente manda dado no body (`@Post`/`@Put`/`@Patch`) ou pede exclusão (`@Delete`), é `Command` — a ausência de mutação em banco não isenta. Só GET puro (sem body, só query params/path params) é `Query`.
+Isso vale mesmo quando o endpoint não persiste nada (ex: uma calculadora de preço/frete que só lê de um provider externo e devolve um número). Se o cliente manda dado no body (`@Post`/`@Put`/`@Patch`) ou pede exclusão (`@Delete`), é `Command` — a ausência de mutação em banco não isenta. Só GET puro (sem body, só query params/path params) é `Query`.
 
 Motivo: verbo HTTP já é o contrato público da API sobre efeito esperado (idempotência, cache, retry automático de cliente). Deixar a classificação interna seguir esse mesmo contrato evita a situação de um endpoint que "parece leitura" por fora (semântica de negócio) mas se comporta diferente por dentro (ex: um poderia usar CommandBus outro QueryBus para o mesmo tipo de payload) — o verbo já decide, sem debate caso a caso.
 
-Na prática, isso significa: qualquer endpoint que precise de body (payload que não cabe em query string — lista de itens, objeto aninhado) é `@Post` + `Command`, mesmo sendo uma "calculadora"/consulta pura. Exemplo real do projeto: `POST /v1/catalog/cart/calculate-pricing` (calcula preço da sacola a partir de `{productId, quantity}[]`) e `POST /v1/logistic/shipping/calculate-pricing` (calcula frete) são ambos `Command`, não `Query`, porque são `@Post`.
+Na prática, isso significa: qualquer endpoint que precise de body (payload que não cabe em query string — lista de itens, objeto aninhado) é `@Post` + `Command`, mesmo sendo uma "calculadora"/consulta pura. Ex: um endpoint que calcula um preço a partir de uma lista de itens no body é `Command`, não `Query`, porque é `@Post` — o verbo decide, não o fato de não escrever nada no banco.
 
 ## 3.3 `findAll` paginável nunca pagina em memória (regra fixa do projeto)
 
 Sempre que um `findAll` puder ser paginado, a paginação é **sempre real na fonte**, nunca "busca tudo e corta em memória (`.slice()`)" — nem pro banco, nem pra provider externo.
 
 - **Dado nosso, vindo do banco (Drizzle)**: sempre pagina. Usa `LIMIT`/`OFFSET` (`.limit(perPage).offset((page - 1) * perPage)`) direto na query do repository, mais um `count()` separado (`select({ value: count() }).from(table)`, mesmo `where`) pra `total`/`totalPages`. Nunca `select().from(table)` sem `limit` seguido de slice em JS.
-- **Provider externo**: antes de implementar, confirma na doc oficial do provider se ele aceita paginação de verdade (`page`/`per_page`, cursor, etc). Se aceitar, repassa os parâmetros de paginação recebidos direto pra chamada e devolve a página que o provider já devolveu — não busca o dataset inteiro pra paginar depois em memória. Se o provider **não** aceitar paginação nativa (ou a paginação dele não é compatível com o filtro que o módulo precisa aplicar — caso real de `NuvemshopFindAllProductsService`, que filtra por tag/busca livre que a Nuvemshop não suporta nativamente, então busca o catálogo publicado inteiro e pagina o resultado filtrado em memória), documenta no código o motivo (comentário curto explicando por que não dá pra paginar na fonte) antes de recorrer a isso — é exceção, não o padrão.
+- **Provider externo**: antes de implementar, confirma na doc oficial do provider se ele aceita paginação de verdade (`page`/`per_page`, cursor, etc). Se aceitar, repassa os parâmetros de paginação recebidos direto pra chamada e devolve a página que o provider já devolveu — não busca o dataset inteiro pra paginar depois em memória. Se o provider **não** aceitar paginação nativa (ou a paginação dele não é compatível com o filtro que o módulo precisa aplicar — caso real de `{Provider}FindAll{Entidades}Service`, que filtra por tag/busca livre que o provider não suporta nativamente, então busca o catálogo publicado inteiro e pagina o resultado filtrado em memória), documenta no código o motivo (comentário curto explicando por que não dá pra paginar na fonte) antes de recorrer a isso — é exceção, não o padrão.
 
 Response DTO de listagem paginada segue sempre a forma de `src/modules/v1/catalog/products/dtos/paginated-products.dto.ts`:
 
@@ -625,7 +625,7 @@ async findAllPaginated(page: number, perPage: number): Promise<{ items: TEntity[
 }
 ```
 
-Handler monta `totalPages` a partir do `total` (`Math.max(1, Math.ceil(total / perPage))`), igual `NuvemshopFindAllProductsService.findAll`.
+Handler monta `totalPages` a partir do `total` (`Math.max(1, Math.ceil(total / perPage))`), igual `{Provider}FindAll{Entidades}Service.findAll`.
 
 **Paginação de banco sempre performática, sem exceção:**
 
@@ -694,7 +694,7 @@ drizzle/seeds/{modulo}/
 └── index.ts      # export async function seed{Entidades}(db) { ... }
 ```
 
-`data.json` carrega os valores **finais**, não um shape cru pra transformar — `id` já é um CUID fixo (gerado uma vez, hardcoded), `slug` já vem calculado, nada de chamar `slugify`/`createCUID` dentro do `index.ts` do seed. Isso torna o seed determinístico entre execuções e entre ambientes (mesmo `id` sempre, sem depender de gerar em runtime). Referência real: `drizzle/seeds/categories/`, `drizzle/seeds/tags/`, `src/configs/seeds/database/users/`.
+`data.json` carrega os valores **finais**, não um shape cru pra transformar — `id` já é um CUID fixo (gerado uma vez, hardcoded), `slug` já vem calculado, nada de chamar `slugify`/`createCUID` dentro do `index.ts` do seed. Isso torna o seed determinístico entre execuções e entre ambientes (mesmo `id` sempre, sem depender de gerar em runtime). Procure um seed já existente no projeto pra usar de referência.
 
 `index.ts` só lê o json e insere:
 
@@ -776,11 +776,11 @@ export function {nomeDaFuncao}(entrada: TipoEntrada): TipoSaida {
 }
 ```
 
-Antes de escrever, procure se já existe algo assim (ex: `pick-localized-text.helper.ts`, `map-nuvemshop-id-name.helper.ts`, `parse-price-to-cents.helper.ts`) — reaproveite em vez de duplicar.
+Antes de escrever, procure se já existe algo assim (ex: `pick-localized-text.helper.ts`, `map-provider-id-name.helper.ts`, `parse-price-to-cents.helper.ts`) — reaproveite em vez de duplicar.
 
 ### 4.4 Service de integração — um arquivo por caso de uso
 
-**Responsabilidade única: cada service resolve UM caso de uso.** Se o módulo precisa de `findAll` e `findBySlug`, são dois arquivos, duas classes, cada uma com seu próprio `@Injectable()` — nunca uma classe com dois métodos públicos. Ambos chamam o client global do provider (`@Inject` do token exportado por `src/infrastructure/services/{provider}/{provider}.provider.ts` — crie esse provider global primeiro se ainda não existir, seguindo `src/infrastructure/services/nuvemshop/nuvemshop.provider.ts` ou `cognito.provider.ts` como referência), convertem o resultado com `plainToInstance` (**não** com uma função `map...` manual — o mapeamento já está nos `@Transform` do dto, template 4.1), logam erro e lançam exceção HTTP apropriada. Cache via `CACHE_MANAGER` quando o dado mudar pouco.
+**Responsabilidade única: cada service resolve UM caso de uso.** Se o módulo precisa de `findAll` e `findBySlug`, são dois arquivos, duas classes, cada uma com seu próprio `@Injectable()` — nunca uma classe com dois métodos públicos. Ambos chamam o client global do provider (`@Inject` do token exportado por `src/infrastructure/services/{provider}/{provider}.provider.ts` — crie esse provider global primeiro se ainda não existir, seguindo outro provider já existente no projeto como referência), convertem o resultado com `plainToInstance` (**não** com uma função `map...` manual — o mapeamento já está nos `@Transform` do dto, template 4.1), logam erro e lançam exceção HTTP apropriada. Cache via `CACHE_MANAGER` quando o dado mudar pouco.
 
 `infrastructure/{provider}/services/find-all-{entidades}.service.ts`:
 ```ts
@@ -867,7 +867,7 @@ Query de busca específica segue o mesmo formato mas com prefixo `Find` (sem `Al
 
 ### 4.6 Command (escrita) — `commands/{verbo}-{entidade}/`
 
-Referência real: `src/modules/v1/identity/o-auth/commands/authenticate-user-with-email-and-password/`.
+Procure um command de autenticação já existente no projeto pra usar de referência.
 
 `{verbo}-{entidade}.command.ts` (classe simples; use `extends Command<TResultado>` do `@nestjs/cqrs` só quando quiser o retorno tipado no `CommandBus.execute`):
 ```ts
@@ -1032,7 +1032,7 @@ export class Handle<Provider>WebhookHandler implements ICommandHandler<Handle<Pr
 ## 5. Provider global do fornecedor externo (se ainda não existir)
 
 Se o módulo é o primeiro a integrar esse provider, crie antes (fora do módulo, em `src/infrastructure/services/{provider}/`):
-- `{provider}.provider.ts` — factory do client (axios/SDK), token de injeção, valida env vars e lança `InternalServerErrorException` se faltar config. Ver `src/infrastructure/services/nuvemshop/nuvemshop.provider.ts`.
+- `{provider}.provider.ts` — factory do client (axios/SDK), token de injeção, valida env vars e lança `InternalServerErrorException` se faltar config. Ver outro provider já existente no projeto como referência.
 - `{provider}.module.ts` — `@Global()`, exporta o token.
 - Registre as env vars em `src/configs/environment/index.ts` (namespace `{provider}: {...}`) e em `.env.example`/`.env`.
 - Registre o módulo global em `src/app.module.ts` (`imports`).

@@ -4,7 +4,7 @@ Procedimento completo. Orçamento: **6 chamadas de ferramenta**. Gaste-as assim:
 
 ## 1. Coleta (UMA chamada de bash, exatamente esta)
 
-`lefandom.web` e `lefandom.api` são repos git independentes; a raiz não é repo. Substitua `REPOS` pelo alvo pedido.
+`<repo-web>` e `<repo-api>` são repos git independentes; a raiz não é repo. Substitua `REPOS` pelo alvo pedido.
 
 ```bash
 cd <raiz>
@@ -45,11 +45,11 @@ echo "== duplicata de Y =="; grep -rn "trecho-caracteristico" src --include="*.t
 
 Sem evidência = não reporta, ou marca **suspeita** dizendo o que falta.
 
-Pra cruzar `meta.requiresAuth` (regra do item 4) sem gastar chamada extra: junte no mesmo bash de verificação um grep pela URL do endpoint (a string em `getX().findY` → veja a `url:` no arquivo gerado do orval, ex. `src/services/v1/orders/orders.ts`) direto nos controllers do `lefandom.api` (`grep -rn "rota-do-endpoint" ../lefandom.api/src --include="*.controller.ts"` a partir da raiz do monorepo) e confira se o método tem guard de auth. Só faça isso pras queries que o diff realmente tocou — não varra todas as queries do projeto.
+Pra cruzar `meta.requiresAuth` (regra do item 4) sem gastar chamada extra: junte no mesmo bash de verificação um grep pela URL do endpoint (a string em `getX().findY` → veja a `url:` no arquivo gerado do orval, ex. `src/services/v1/orders/orders.ts`) direto nos controllers do `<repo-api>` (`grep -rn "rota-do-endpoint" ../<repo-api>/src --include="*.controller.ts"` a partir da raiz do monorepo) e confira se o método tem guard de auth. Só faça isso pras queries que o diff realmente tocou — não varra todas as queries do projeto.
 
 Falso positivo comum: arquivo de rota (TanStack Router) e módulo NestJS registrado por convenção não têm import explícito — não são código morto.
 
-## 4. Checklist FRONT (`lefandom.web`)
+## 4. Checklist FRONT (`<repo-web>`)
 
 **Estrutura**
 - Rota (`src/pages/<rota>/index.tsx`) fina: só `loader`, `validateSearch`, `component` compondo. Lógica de interação/parse/regra de negócio na rota = violação.
@@ -63,7 +63,7 @@ Falso positivo comum: arquivo de rota (TanStack Router) e módulo NestJS registr
 - Busca de dado no `loader` (SSR). Client-side só com motivo real e **sempre** via TanStack Query. `useState` + `fetch`/service na mão controlando loading/erro = violação.
 - Filtro/tab/paginação compartilhável em `useState` em vez de `validateSearch`/URL = violação.
 - **🔴 `queryKey`/`mutationKey` cru — regra fixa, sempre bloqueante.** Toda `queryKey`, `mutationKey`, e todo `invalidateQueries`/`removeQueries`/`setQueryData`/`getQueryData`/`fetchQuery`/`prefetchQuery`/`ensureQueryData` usa `queryKeys(Query.X)` de `src/utils/query-keys.ts`, chamado direto no call site. Array literal (`["orders", id]`) **ou constante local/exportada** (`const FOO_QUERY_KEY = queryKeys(Query.X).all()` reexportada e importada em outro arquivo) = 🔴 BLOQUEIA. Corrija: adicione o membro em `Query` (`src/constants/enums/http/query.enum.ts`) e troque pela chamada `queryKeys(Query.X).all()`/`.withParams({...})` direto onde a key é usada, sem constante intermediária.
-- **🔴 `meta.requiresAuth` tem que espelhar o endpoint real — regra fixa, sempre bloqueante.** Toda `queryOptions` nova ou tocada em `src/services/queries/**` que chama um método do orval (`src/services/v1/**`) precisa refletir se aquele endpoint exige sessão. O orval não carrega essa informação no fetcher gerado — confirme no controller do `lefandom.api` (mesma URL/método do fetcher) se a rota tem guard de auth (`@UseGuards(...)` equivalente) e não tem `@Public()`/equivalente liberando anônimo. Rota autenticada no back sem `meta: { requiresAuth: true }` na `queryOptions` do front = 🔴 BLOQUEIA — é a classe exata de bug que gerava 401 pra usuário anônimo e cache vazando dado de sessão anterior. Rota pública no back com `meta.requiresAuth: true` sobrando no front também é achado (🟡 AJUSTA: gate desnecessário, bloqueia leitura de dado que devia ser livre). Se o review é só de `lefandom.web` e o `lefandom.api` não está disponível pra cruzar, não adivinhe: marque como suspeita (`🟡 NÃO REVISADO: confirmar guard de auth em <endpoint> no back antes de aprovar`), nunca assuma público nem privado sem checar.
+- **🔴 `meta.requiresAuth` tem que espelhar o endpoint real — regra fixa, sempre bloqueante.** Toda `queryOptions` nova ou tocada em `src/services/queries/**` que chama um método do orval (`src/services/v1/**`) precisa refletir se aquele endpoint exige sessão. O orval não carrega essa informação no fetcher gerado — confirme no controller do `<repo-api>` (mesma URL/método do fetcher) se a rota tem guard de auth (`@UseGuards(...)` equivalente) e não tem `@Public()`/equivalente liberando anônimo. Rota autenticada no back sem `meta: { requiresAuth: true }` na `queryOptions` do front = 🔴 BLOQUEIA — é a classe exata de bug que gerava 401 pra usuário anônimo e cache vazando dado de sessão anterior. Rota pública no back com `meta.requiresAuth: true` sobrando no front também é achado (🟡 AJUSTA: gate desnecessário, bloqueia leitura de dado que devia ser livre). Se o review é só de `<repo-web>` e o `<repo-api>` não está disponível pra cruzar, não adivinhe: marque como suspeita (`🟡 NÃO REVISADO: confirmar guard de auth em <endpoint> no back antes de aprovar`), nunca assuma público nem privado sem checar.
 
 **Componente**
 - Reusa primitivo de `src/components/ui` em vez de HTML cru; não sobrescreve estilo do primitivo por fora (className conflitante, `!important`, cor literal).
@@ -76,7 +76,7 @@ Falso positivo comum: arquivo de rota (TanStack Router) e módulo NestJS registr
 - Chave usada que não existe no JSON quebra em runtime e o type-check não pega — confira as chaves novas do diff.
 - Nome da marca vem de `layouts:tenant.name`, nunca hardcoded.
 
-## 5. Checklist BACK (`lefandom.api`)
+## 5. Checklist BACK (`<repo-api>`)
 
 - **🔴 Saída do back é prop a prop — regra fixa, sempre bloqueante.** Escrita em banco (`.values()`, `.set()`) e envio pra integração externa (comando de SDK, body HTTP, chamada a serviço externo de qualquer tipo) montados campo a campo. `{ ...payload }` cruzando essa fronteira = 🔴 BLOQUEIA, nunca rebaixe pra 🟡 ou 🔵. Campo opcional usa `campo: cond ? v : undefined`, nunca spread condicional. Spread interno (handler → controller, `[...handlers]` no módulo) é permitido e não é achado. Grep pra achar candidato: `\.\.\.(payload|dto|command|data|input)\b` dentro de `.values(`, `.set(`, `new \w+Command(`, chamada de client/SDK.
 - Nomenclatura: listagem = `findAll...`; busca por prop = `find...`. Nunca `get...`/`fetch...`.
@@ -109,7 +109,7 @@ Corrija sozinho, seguindo a arquitetura do projeto, quando a correção for **ó
 - renomear arquivo/export pra convenção (inclusive hook `.ts` → `.tsx`);
 - extrair string literal do JSX pro JSON de i18n do domínio certo;
 - trocar `mutateAsync` solto por `mutate`;
-- adicionar/remover `meta: { requiresAuth: true }` numa `queryOptions` quando o guard do endpoint no `lefandom.api` já foi confirmado (regra do item 4) — é troca de uma linha, sem ambiguidade quando a confirmação existe;
+- adicionar/remover `meta: { requiresAuth: true }` numa `queryOptions` quando o guard do endpoint no `<repo-api>` já foi confirmado (regra do item 4) — é troca de uma linha, sem ambiguidade quando a confirmação existe;
 - desmontar `{ ...payload }` em escrita de banco ou chamada externa pra campo a campo (regra do item 5, sempre corrigir quando os campos do objeto de origem estiverem visíveis no arquivo — se o tipo vem de outro arquivo e não dá pra confirmar os campos sem gastar chamada extra, reporte em vez de arriscar corrigir errado);
 - remover import, variável, prop, export ou chave i18n não usados;
 - trocar valor hardcoded por constante/chave que já existe (ex: nome da marca → `layouts:tenant.name`);
