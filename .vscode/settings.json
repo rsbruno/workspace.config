@@ -46,12 +46,6 @@
   "[json]": {
     "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
   },
-  "sonarlint.connectedMode.connections.sonarqube": [
-    {
-      "serverUrl": "https://sonar.inteli.cloud",
-      "connectionId": "https-sonar-inteli-cloud-",
-    },
-  ],
   "sonarlint.focusOnNewCode": true,
   "sonarlint.automaticAnalysis": false,
   "[typescript]": {

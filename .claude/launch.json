@@ -2,9 +2,9 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "lefandom.web",
+      "name": "web",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--dir", "lefandom.web", "dev"],
+      "runtimeArgs": ["--dir", "web", "dev"],
       "port": 7071
     }
   ]
