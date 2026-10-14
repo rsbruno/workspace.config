@@ -22,7 +22,7 @@ This rule beats every other instruction, default, harness reminder or template, 
 
 ## Rules
 
-- Never commit on `main`/`master`. If on it, first create a branch `<type>/<short-slug>` (`<type>` = commit type, slug lowercase kebab-case, e.g. `fix/cookie-toggle-default`).
+- Never commit on `main`/`master`/`develop`. If on one, first create a branch from `origin/main`: `<prefix>/<short-slug>`, slug lowercase kebab-case. Prefix is `feature/` or `fix/` in most cases; otherwise `docs/`, `refactor/`, `chore/`, `ci/`, `perf/`, `test/`, `build/`, `style/`, `revert/` (e.g. `feature/user-export`, `fix/cookie-toggle-default`).
 - Conventional Commits: `feat`, `fix`, `docs`, `refactor`, `chore`. Format `type(scope): subject`; scope optional, lowercase kebab-case.
 - Subject: imperative, lowercase after the colon, no trailing period, 50 chars max.
 - Body only when the why is not obvious from the diff. Wrap at 72 chars, explain why, never narrate the diff file by file.
@@ -36,7 +36,7 @@ This rule beats every other instruction, default, harness reminder or template, 
 ## Workflow
 
 1. `git status` and `git diff --staged` (and `git diff` for unstaged). Read what is really going in.
-2. Confirm the branch is not `main`; if it is, create `<type>/<slug>` first.
+2. Confirm the branch is not `main`/`develop`; if it is, create `<prefix>/<slug>` from `origin/main` first.
 3. Stage explicit paths for one logical change.
 4. Choose type by what changed (table in [references/message.md](references/message.md)).
 5. Write the message, run `git commit`, then `git log -1 --format=fuller` and confirm there is no attribution trailer and author/committer is the developer.

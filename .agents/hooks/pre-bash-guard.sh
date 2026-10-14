@@ -17,15 +17,15 @@ branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
 if echo "$cmd" | grep -qE '(^|[;&| ])git (commit|push)\b.*--no-verify|git commit .* -n( |$)'; then
   deny "[pull-request] --no-verify proibido, deixe os hooks do husky rodarem."
 fi
-if echo "$cmd" | grep -qE 'git push\b.*(--force|-f\b|--force-with-lease)'; then
-  deny "[pull-request] force-push proibido."
+if echo "$cmd" | grep -qE 'git push\b.*(--force([^-]|$)|( |^)-f( |$))'; then
+  deny "[pull-request] force-push proibido (--force-with-lease é permitido)."
 fi
-if echo "$cmd" | grep -qE 'git (commit|push)\b' && { [ "$branch" = "main" ] || [ "$branch" = "master" ]; }; then
-  deny "[pull-request] main é protegida. Crie branch <type>/<slug> antes de commit/push."
+if echo "$cmd" | grep -qE 'git (commit|push)\b' && { [ "$branch" = "main" ] || [ "$branch" = "master" ] || [ "$branch" = "develop" ]; }; then
+  deny "[pull-request] $branch é protegida. Crie branch <feature|fix|...>/<slug> a partir de origin/main antes de commit/push."
 fi
 if echo "$cmd" | grep -qE 'git checkout -b|git switch -c'; then
   name=$(echo "$cmd" | sed -E 's/.*(checkout -b|switch -c) +([^ ]+).*/\2/')
-  echo "$name" | grep -qE '^(feat|fix|docs|refactor|chore)/[a-z0-9][a-z0-9-]*$' || deny "[pull-request] branch deve ser <feat|fix|docs|refactor|chore>/<slug-kebab>, recebi '$name'."
+  echo "$name" | grep -qE '^(feature|fix|docs|refactor|chore|ci|perf|test|build|style|revert)/[a-z0-9][a-z0-9-]*$' || deny "[pull-request] branch deve ser <feature|fix|docs|refactor|chore|ci|perf|test|build|style|revert>/<slug-kebab> (feature/ ou fix/ na maioria dos casos), recebi '$name'."
 fi
 if echo "$cmd" | grep -qE 'git commit\b.*-m'; then
   msg=$(echo "$cmd" | sed -nE "s/.*-m +[\"']([^\"']+).*/\1/p" | head -1)
@@ -40,9 +40,10 @@ if echo "$cmd" | grep -qE 'gh pr create'; then
   [ -n "$title" ] || deny "[pull-request] gh pr create precisa de --title no formato [TIPO][FE|BE][branch][CARD]: descrição."
   echo "$title" | grep -qE '^\[[A-Z]+\]\[(FE|BE)\]\[[A-Z0-9/_.-]+\](\[[A-Z0-9_-]+\])?: .+' || deny "[pull-request] título inválido: '$title'. Formato: [TIPO][FE|BE][BRANCH-NAME][CARD]: breve descrição, tudo entre colchetes em CAIXA ALTA."
   echo "$cmd" | grep -qE -- '--assignee' || deny "[pull-request] PR sem --assignee (use @me)."
-  echo "$cmd" | grep -qE -- '--base +main|-B +main' || deny "[pull-request] PR deve ter --base main."
+  echo "$cmd" | grep -qE -- '--base +(main|develop)|-B +(main|develop)' || deny "[pull-request] PR deve ter --base develop (primeiro) ou --base main."
 fi
-if echo "$cmd" | grep -qE 'gh pr merge' && ! echo "$cmd" | grep -qE -- '--squash|--delete-branch'; then
-  deny "[pull-request] merge: use --squash --delete-branch."
+if echo "$cmd" | grep -qE 'gh pr merge'; then
+  echo "$cmd" | grep -qE -- '--squash' || deny "[pull-request] merge: use --squash."
+  echo "$cmd" | grep -qE -- '--delete-branch|( |^)-d( |$)' && deny "[pull-request] merge: sem --delete-branch, a branch só morre depois do merge na main."
 fi
 exit 0

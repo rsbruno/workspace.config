@@ -55,7 +55,7 @@ EOF
 
 - `--assignee` é fixo e sempre presente. Em repositório solo, é o próprio dono.
 - O bloco `<details>` só entra quando existiu uma decisão com trade-off de fato.
-- A base é sempre `main` (default do repositório, não precisa `--base`).
+- A base é `develop` no primeiro PR e `main` no segundo, sempre explícita com `--base`.
 
 ## Atribuição
 
