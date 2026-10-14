@@ -1,7 +1,6 @@
 ---
 name: backend-filter
 description: Decide which schema columns deserve a findAll filter, pick the operator per column type, and write DTO and repository condition.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"
