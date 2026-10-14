@@ -1,7 +1,6 @@
 ---
 name: backend-schema
 description: Drizzle schema rules — soft delete, pivots, integer enums, money in cents, scaled numbers, dates, column sizing, slug, seeds.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"

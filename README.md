@@ -42,7 +42,12 @@ Manualmente, copie a pasta da skill desejada para `.claude/skills/` (Claude Code
 .agents/skills/
 ├── backend/    11 skills (NestJS, Drizzle, CQRS)
 ├── frontend/   10 skills (React, TanStack, Zod)
-└── workflow/    2 skills (pull request, pre-review)
+└── workflow/    4 skills (commit, pull request, pre-review, project-guide)
+
+.agents/agents/
+└── AGENTS.md   arquivo único para CLAUDE.md e AGENTS.md (roteamento de skills + regras)
+
+.agents/hooks/  hooks de guarda (grep puro) + settings.example.json
 
 .vscode/
 ├── settings.json

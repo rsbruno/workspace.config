@@ -1,7 +1,6 @@
 ---
 name: backend-dto
 description: Response DTO contract rules for Orval codegen — explicit @ApiProperty typing, nullable vs optional, slim responses, integer typing.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"

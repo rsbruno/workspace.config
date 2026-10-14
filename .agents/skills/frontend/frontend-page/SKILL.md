@@ -1,7 +1,6 @@
 ---
 name: frontend-page
 description: File/folder structure and route chrome for a CRUD screen set (listing + create + edit) — permission gating, form shell, tabs, dialogs, boundaries.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"

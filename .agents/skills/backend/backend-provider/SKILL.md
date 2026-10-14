@@ -1,7 +1,6 @@
 ---
 name: backend-provider
 description: External provider integration rules — plainToInstance + @Transform mapping, one service per use case, global client, webhook handler.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"

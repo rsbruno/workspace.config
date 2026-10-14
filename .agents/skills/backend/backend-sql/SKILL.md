@@ -1,7 +1,6 @@
 ---
 name: backend-sql
 description: Drizzle repository rules — query shape, tenant boundary in SQL, soft-delete transitions, real pagination, filter composition, joins, transactions.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"

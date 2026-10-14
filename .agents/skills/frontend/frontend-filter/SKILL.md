@@ -1,7 +1,6 @@
 ---
 name: frontend-filter
 description: Listing-filter pattern (TanStack Router + React Hook Form + Zod + persisted Zustand) — discover filters, schema, store, fields, i18n keys, route wiring.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"
