@@ -1,7 +1,6 @@
 ---
 name: frontend-locale
 description: Padroniza os locales de telas — árvore obrigatória de pages.json, strings fixas de ações e confirmações, e onde cada locale fica.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"

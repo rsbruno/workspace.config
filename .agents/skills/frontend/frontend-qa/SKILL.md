@@ -1,7 +1,6 @@
 ---
 name: frontend-qa
 description: Escreve e audita testes frontend — Playwright (E2E) e Vitest + Testing Library (integração, unitário) em src/__tests__, com relatório de lacunas.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"

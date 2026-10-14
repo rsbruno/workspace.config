@@ -1,7 +1,6 @@
 ---
 name: backend-cqrs
 description: CQRS rules for a NestJS API — query vs command, module boundaries, tenant scope, lifecycle, pagination, handler/controller/module templates.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"

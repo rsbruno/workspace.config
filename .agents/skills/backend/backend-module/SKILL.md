@@ -1,7 +1,6 @@
 ---
 name: backend-module
 description: Scaffold a new NestJS DDD/CQRS module end to end — folder layout, folder responsibilities, registration, migration, tests.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"

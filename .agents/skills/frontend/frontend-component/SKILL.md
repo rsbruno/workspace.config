@@ -1,7 +1,6 @@
 ---
 name: frontend-component
 description: Pattern for React compound components (2+ parts sharing state) — one file per part, flattened exports, index.ts only, React 19, scoped vs global.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"

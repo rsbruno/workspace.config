@@ -1,7 +1,6 @@
 ---
 name: backend-locale
 description: i18n rules — English DTO properties, Portuguese user-facing messages via translation files and BusinessException only.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"

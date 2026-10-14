@@ -12,12 +12,4 @@ gh pr merge <number> --squash --delete-branch
 
 ## Commits
 
-Conventional Commits, alinhado ao histórico (`git log --oneline`):
-
-- `feat:` nova capacidade
-- `fix:` correção de bug
-- `docs:` só documentação
-- `refactor:` sem mudança de comportamento
-- `chore:` ferramental e configuração
-
-Assunto no imperativo, até 50 caracteres. Corpo só se o porquê não estiver claro no diff. Deixe os hooks de pre-commit (formatação, lint) rodarem; não use `--no-verify`.
+Regras de commit (tipos, assunto, corpo, hooks) vivem na skill `commit`. O agente nunca é autor nem coautor: sem `Co-Authored-By`, sem "Generated with".

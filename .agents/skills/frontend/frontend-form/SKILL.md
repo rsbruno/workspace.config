@@ -1,7 +1,6 @@
 ---
 name: frontend-form
 description: Choose the controlled field component per field and mirror backend-declared constraints from the generated DTO into Zod and component props.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"

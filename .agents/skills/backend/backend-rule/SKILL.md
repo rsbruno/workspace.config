@@ -1,7 +1,6 @@
 ---
 name: backend-rule
 description: Permission (policy) rules — billing-feature gate, fixed row shape, naming, ordering, Manage pattern, catalog and guard tests.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"

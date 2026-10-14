@@ -1,7 +1,6 @@
 ---
 name: frontend-fallback
 description: Build loading fallbacks/skeletons that mirror the loaded structure exactly — dedicated fallback components, both loading moments, no layout shift.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"

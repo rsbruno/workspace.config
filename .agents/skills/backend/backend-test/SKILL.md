@@ -1,7 +1,6 @@
 ---
 name: backend-test
 description: Standard for backend tests — unit, integration (real Postgres), E2E (real HTTP/guards/CQRS/i18n), scenario inventory, mutation checks.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"

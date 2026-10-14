@@ -1,7 +1,6 @@
 ---
 name: frontend-stepper
 description: Padrão de telas com steps (wizard) — steps lazy declarados na rota, StepperRoot com `steps`, StepperFooterSummary, search schema, guard inline.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"

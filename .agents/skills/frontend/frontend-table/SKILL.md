@@ -1,7 +1,6 @@
 ---
 name: frontend-table
 description: Listing table standard — column order and sizes, TableRowLink, declarative row actions, status badge, toolbar, pagination, empty/loading.
-disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 metadata:
   version: "1.0.0"
