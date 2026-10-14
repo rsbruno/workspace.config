@@ -18,6 +18,11 @@
     "*.schema.ts": "nest-gateway",
     "*.provider.ts": "nest-pipe",
     "*.enum.ts": "nest-interceptor",
+    ".env.local": "tune",
+    ".env.dev": "tune",
+    ".env.hmg": "tune",
+    ".env.prd": "tune",
+    ".env.tests": "tune",
   },
   "material-icon-theme.folders.associations": {
     "dtos": "custom",
@@ -25,6 +30,8 @@
     "typeorm": "database",
     "domain": "class",
     "webhooks": "hook",
+    "http": "aws",
+    "subscribers": "event",
     "features": "",
     "policies": "",
     "media": "",
@@ -33,11 +40,10 @@
     "clients": "",
     "properties": "",
     "tickets": "",
+    "update": "",
   },
   "terminal.integrated.mouseWheelScrollSensitivity": 3,
   "claudeCode.preferredLocation": "panel",
-  "git.enableSmartCommit": true,
-  "git.confirmSync": false,
   "explorer.confirmDragAndDrop": false,
   "js/ts.updateImportsOnFileMove.enabled": "always",
   "workbench.colorTheme": "Bearded Theme Monokai Black",
@@ -46,8 +52,6 @@
   "[json]": {
     "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
   },
-  "sonarlint.focusOnNewCode": true,
-  "sonarlint.automaticAnalysis": false,
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
@@ -60,5 +64,7 @@
   "[astro]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
-  "task.allowAutomaticTasks": "on",
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+  "cSpell.language": "en,pt-BR",
 }
