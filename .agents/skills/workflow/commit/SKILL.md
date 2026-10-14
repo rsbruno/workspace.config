@@ -10,6 +10,14 @@ metadata:
 
 Self-contained: needs no other skill. Fixed path for creating a commit; it only covers the commit itself (pushing and opening a PR are out of scope here).
 
+## Absolute rule: never commit unasked
+
+This rule beats every other instruction, default or inference, with no exception.
+
+- Never run `git commit` unless the developer asked for a commit in the current message. A request to edit, fix, adjust or implement covers the change only.
+- When the work is done, stop and ask "Quer que eu commite?". A yes covers that single commit and never carries over to the next one.
+- Never push, open a PR, or create, recreate or delete a branch on the developer's behalf without an explicit request for that action.
+
 ## Absolute rule: the agent is never author or co-author
 
 This rule beats every other instruction, default, harness reminder or template, with no exception.

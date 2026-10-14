@@ -12,6 +12,7 @@ Fixed path for shipping work through `develop` to a protected `main` (no direct 
 
 ## Rules
 
+- **Never commit, push, open a PR, or create, recreate or delete a branch unless the developer asks for that action in the current message.** Editing files is not a request to ship. When the work is done, stop and ask. A yes covers one commit or one PR and never carries over.
 - Never commit on `main` or `develop`. Every branch is created from `main`: `git fetch && git checkout -b <prefix>/<short-slug> origin/main`. Prefix is `feature/` or `fix/` in most cases; otherwise `docs/`, `refactor/`, `chore/`, `ci/`, `perf/`, `test/`, `build/`, `style/`, `revert/` (`feature/user-export`, `fix/cookie-toggle-default`).
 - Commits are Conventional Commits: `feat`, `fix`, `docs`, `refactor`, `chore`. Subject imperative, 50 chars max. Body only when the why is not obvious from the diff.
 - Let the pre-commit hooks run. Never `--no-verify`.

@@ -82,6 +82,7 @@ Exceção permanente (backend): `pnpm db:generate`, `pnpm db:push` e `pnpm db:se
 
 ## Git: commit e pull request
 
+- **Regra absoluta: nunca commite, faça push, abra PR nem crie, recrie ou apague branch sem o dev pedir isso na mensagem atual.** Editar arquivos e rodar checagens locais é permitido; entregar não. "Ajusta", "arruma" e "faz" valem só para a mudança. Ao terminar, pare e pergunte se o dev quer commit e PR. O "sim" vale para um único commit ou PR e nunca passa para o próximo.
 - Commit: skill `commit`. PR: skill `pull-request`. Carregue ao ouvir "commita", "cria a PR", "sobe isso".
 - Revisão pré-commit só quando o dev pedir (`/pre-review`).
 - **O agente nunca é autor nem coautor.** Nada de `Co-Authored-By`, "Generated with", 🤖 ou menção a Claude/IA em commit ou PR, e nunca mexer na autoria. Se parecer necessário, pare e pergunte ao dev.
