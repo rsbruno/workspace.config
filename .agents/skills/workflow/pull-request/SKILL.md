@@ -3,7 +3,7 @@ name: pull-request
 description: Workflow to commit and open a pull request from the branch the developer is on, against a protected main — Conventional Commits, fixed PR title and body, merge. Never creates, switches or deletes branches. Use whenever the user asks to open/create a PR or ship/push work ("cria a pull request", "abre PR", "sobe isso", "subir", "criar PR").
 license: Complete terms in LICENSE.txt
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # pull-request
@@ -19,7 +19,7 @@ Fixed path for shipping work to a protected `main` (no direct push, no force-pus
 - PR title shape, no exceptions: `[TIPO][FE|BE][BRANCH-NAME][CARD]: breve descrição`. Everything inside brackets is always UPPERCASE (branch name too, e.g. `[FIX][FE][FIX/COOKIE-TOGGLE]`). `BRANCH-NAME` is the real current branch, never one you made up. `CARD` is omitted entirely when there is no ticket.
 - PR body answers three questions in order: O quê, Por quê, Como. Sections without real content do not exist. No emoji headings, no generic "Changes" checklist.
 - The assignee is always set (a PR without one is an orphan).
-- Base is `main`, or `develop` when the developer says so; always pass `--base` explicitly. Merge through the PR (squash by default), never a direct push. Never delete branches yourself: the repository workflow or the developer does it after the merge.
+- Base is `main`, or `develop` when the developer says so; always pass `--base` explicitly. Merge through the PR with a regular merge commit (`--merge`) by default, or `--squash` only when the repository rules allow nothing else; never a direct push. The merge commit title is the PR title, so the title format matters for releases. Never delete branches yourself: the repository workflow or the developer does it after the merge.
 
 ## References
 

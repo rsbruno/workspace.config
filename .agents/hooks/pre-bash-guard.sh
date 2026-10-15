@@ -72,7 +72,7 @@ if echo "$cmd" | grep -qE 'gh pr create'; then
   echo "$cmd" | grep -qE -- '--base +(main|develop)|-B +(main|develop)' || deny "[pull-request] PR deve ter --base develop (primeiro) ou --base main."
 fi
 if echo "$cmd" | grep -qE 'gh pr merge'; then
-  echo "$cmd" | grep -qE -- '--squash' || deny "[pull-request] merge: use --squash."
+  echo "$cmd" | grep -qE -- '--(merge|squash)\b' || deny "[pull-request] merge: informe o método (--merge, o padrão; --squash só se o repositório permitir apenas squash)."
   echo "$cmd" | grep -qE -- '--delete-branch|( |^)-d( |$)' && deny "[pull-request] merge: sem --delete-branch, a branch só morre depois do merge na main."
 fi
 exit 0
