@@ -103,7 +103,7 @@ Todas têm `disable-model-invocation: true`: o modelo nunca as dispara sozinho e
 
 | Skill | Cobre |
 | --- | --- |
-| `pull-request` | Branch, commit e PR com título e corpo padronizados |
+| `pull-request` | Commit e PR a partir da branch atual, com título e corpo padronizados |
 | `pre-review` | Review do que está na worktree antes do commit, validando contra as demais skills |
 
 ## Snippet para AGENTS.md / CLAUDE.md

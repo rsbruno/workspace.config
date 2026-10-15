@@ -5,10 +5,10 @@
 Padrão: squash merge, a menos que o usuário peça outro.
 
 ```bash
-gh pr merge <number> --squash --delete-branch
+gh pr merge <number> --squash
 ```
 
-`--delete-branch` mantém a lista de branches limpa: não deixe branches já mergeadas por aí.
+Sem `--delete-branch`: apagar branch é decisão do dev (ou do workflow do repositório depois do merge). O hook `pre-bash-guard.sh` bloqueia essa flag.
 
 ## Commits
 

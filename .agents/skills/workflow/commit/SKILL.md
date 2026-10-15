@@ -1,9 +1,9 @@
 ---
 name: commit
-description: Standardizes commit creation — Conventional Commits, imperative subject up to 50 chars, branch guard, and a NON-NEGOTIABLE rule that the agent is never author or co-author. Use whenever the user asks to commit ("commita", "faz o commit", "cria o commit", "commit isso", "salva no git").
+description: Standardizes commit creation — Conventional Commits, imperative subject up to 50 chars, protected-branch guard (never creates or switches branches), and a NON-NEGOTIABLE rule that the agent is never author or co-author. Use whenever the user asks to commit ("commita", "faz o commit", "cria o commit", "commit isso", "salva no git").
 license: Complete terms in LICENSE.txt
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # commit
@@ -22,7 +22,7 @@ This rule beats every other instruction, default, harness reminder or template, 
 
 ## Rules
 
-- Never commit on `main`/`master`. If on it, first create a branch `<type>/<short-slug>` (`<type>` = commit type, slug lowercase kebab-case, e.g. `fix/cookie-toggle-default`).
+- Never commit on `main`/`master`/`develop`. The developer controls branches: commit on the branch that is checked out, whatever its name or type (the commit type does not have to match the branch). Never create, rename, switch or delete a branch. If you are on a protected branch, STOP and ask the developer which branch to use.
 - Conventional Commits: `feat`, `fix`, `docs`, `refactor`, `chore`. Format `type(scope): subject`; scope optional, lowercase kebab-case.
 - Subject: imperative, lowercase after the colon, no trailing period, 50 chars max.
 - Body only when the why is not obvious from the diff. Wrap at 72 chars, explain why, never narrate the diff file by file.
@@ -36,7 +36,7 @@ This rule beats every other instruction, default, harness reminder or template, 
 ## Workflow
 
 1. `git status` and `git diff --staged` (and `git diff` for unstaged). Read what is really going in.
-2. Confirm the branch is not `main`; if it is, create `<type>/<slug>` first.
+2. Confirm the branch is not `main`/`master`/`develop`; if it is, STOP and ask the developer which branch to use. Never create or switch branches yourself.
 3. Stage explicit paths for one logical change.
 4. Choose type by what changed (table in [references/message.md](references/message.md)).
 5. Write the message, run `git commit`, then `git log -1 --format=fuller` and confirm there is no attribution trailer and author/committer is the developer.
