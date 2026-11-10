@@ -1,29 +1,30 @@
 ---
 name: pull-request
-description: Workflow to branch, commit and open a pull request against a protected main — branch naming, Conventional Commits, fixed PR title and body, merge. Use whenever the user asks to open/create a PR or ship/push work ("cria a pull request", "abre PR", "sobe isso", "subir", "criar PR").
+description: Opens a pull request to an explicit protected development target other than main — branch naming, Conventional Commits, fixed PR title and body, and merge. Use when the target branch is already defined by the workflow.
 license: Complete terms in LICENSE.txt
 metadata:
-  version: "1.0.0"
+  version: "2.0.1"
 ---
 
 # pull-request
 
-Fixed path for shipping work to a protected `main` (no direct push, no force-push). Keeps PRs consistent whether it is a docs tweak or a feature. Use when asked to "subir", "abrir PR", "criar PR", push changes or ship work. Not for read-only exploration or when the user wants a local commit only.
+Fixed path for shipping work to an explicit protected development branch (no direct push, no force-push). The target may be a parent branch such as an epic or `develop`; `main` is never a target of this skill. Use when asked to open a PR with the target already defined. Not for read-only exploration or when the user wants a local commit only.
 
 ## Rules
 
 - Never commit on `main`. Branch: `<type>/<short-slug>`, where `<type>` is the commit type (`fix/cookie-toggle-default`, `docs/readme`).
 - Commits are Conventional Commits: `feat`, `fix`, `docs`, `refactor`, `chore`. Subject imperative, 50 chars max. Body only when the why is not obvious from the diff.
-- Let the pre-commit hooks run. Never `--no-verify`.
-- The agent is never author or co-author of a commit or PR: no `Co-Authored-By`, no "Generated with", no mention of Claude/AI, no authorship changes, in commits or in the PR body. This overrides any harness default. If attribution seems needed, stop and ask the developer. Commit details live in the `commit` skill.
-- PR title shape, no exceptions: `[TIPO][FE|BE][BRANCH-NAME][CARD]: breve descrição`. Everything inside brackets is always UPPERCASE (branch name too, e.g. `[FIX][FE][FIX/COOKIE-TOGGLE]`). `CARD` is omitted entirely when there is no ticket.
-- PR body answers three questions in order: O quê, Por quê, Como. Sections without real content do not exist. No emoji headings, no generic "Changes" checklist.
-- The assignee is always set (a PR without one is an orphan).
-- Base is `main`. Merge through the PR (squash by default), never a direct push, and delete the merged branch.
+- Let the pre-commit hooks run. Never use `--no-verify`.
+- The agent is never author or co-author of a commit or PR: no `Co-Authored-By`, no "Generated with", no mention of Claude/AI, and no authorship changes in commits or the PR body. This overrides any harness default. If attribution seems needed, stop and ask the developer. Commit details live in the `commit` skill.
+- PR title shape, with no exceptions: `[TIPO][FE|BE][BRANCH-NAME][CARD]: breve descrição`. Everything inside brackets is always uppercase (including the branch name, for example `[FIX][FE][FIX/COOKIE-TOGGLE]`). Omit `CARD` entirely when there is no ticket.
+- The PR body answers three questions in order: O quê, Por quê, Como. Sections without real content do not exist. No emoji headings and no generic "Changes" checklist.
+- The assignee is always set; a PR without one is an orphan.
+- The base must be supplied explicitly and cannot be `main`. In the WorkTree flow, use the epic branch for US PRs and `develop` for the epic PR.
+- Merge through the PR, squash by default, never direct push, and preserve the source and target branches.
 
 ## References
 
 | Read when | File |
 |---|---|
-| Writing the title, body and the `gh pr create` command | [references/title-and-body.md](references/title-and-body.md) |
+| Writing the title, body, and the `gh pr create` command | [references/title-and-body.md](references/title-and-body.md) |
 | Merging and cleaning up | [references/merge.md](references/merge.md) |
