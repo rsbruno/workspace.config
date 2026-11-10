@@ -42,7 +42,7 @@ Manualmente, copie a pasta da skill desejada para `.claude/skills/` (Claude Code
 .agents/skills/
 ├── backend/    11 skills (NestJS, Drizzle, CQRS)
 ├── frontend/   10 skills (React, TanStack, Zod)
-└── workflow/    4 skills (commit, pull request, pre-review, project-guide)
+└── workflow/    5 skills (branch, worktree, commit, pull request, pre-review)
 
 .agents/agents/
 └── AGENTS.md   arquivo único para CLAUDE.md e AGENTS.md (roteamento de skills + regras)
@@ -103,7 +103,10 @@ Todas têm `disable-model-invocation: true`: o modelo nunca as dispara sozinho e
 
 | Skill | Cobre |
 | --- | --- |
-| `pull-request` | Branch, commit e PR com título e corpo padronizados |
+| `branch` | Criação de uma branch Git com origem e nome padronizados |
+| `worktree` | Orquestração de tarefas, worktrees, merges e PRs até `develop` |
+| `commit` | Conventional Commits, staging explícito e autoria |
+| `pull-request` | PR para alvo de desenvolvimento explícito, nunca `main` |
 | `pre-review` | Review do que está na worktree antes do commit, validando contra as demais skills |
 
 ## Snippet para AGENTS.md / CLAUDE.md
@@ -141,8 +144,11 @@ Antes de tocar nestes assuntos, leia o `SKILL.md` indicado e só as `references/
 - Direção visual (só se pedido): `.claude/skills/frontend-design/SKILL.md`
 
 ### Workflow
-- Subir mudanças / abrir PR: `.claude/skills/pull-request/SKILL.md`
-- Review antes do commit: `.claude/skills/pre-review/SKILL.md`
+- Criar uma branch Git conforme a tarefa: `.claude/skills/workflow/branch/SKILL.md`
+- Orquestrar desenvolvimento em worktrees até `develop`: `.claude/skills/workflow/worktree/SKILL.md`
+- Criar commit: `.claude/skills/workflow/commit/SKILL.md`
+- Subir mudanças / abrir PR: `.claude/skills/workflow/pull-request/SKILL.md`
+- Review antes do commit: `.claude/skills/workflow/pre-review/SKILL.md`
 ```
 
 As referências entre skills por nome (`backend-rule`, `frontend-page`...) só têm arquivo para abrir se a skill citada também estiver instalada.
@@ -172,6 +178,8 @@ Mudanças entram por PR, seguindo a skill `pull-request`. O título segue o form
 ```
 
 O `[CARD]` é opcional.
+
+No fluxo de desenvolvimento, as skills usam `develop` como destino final. A promoção `develop → main` é manual e não é executada por nenhuma skill.
 
 ## Licença
 

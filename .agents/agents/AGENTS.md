@@ -54,6 +54,16 @@ Exceção permanente (backend): `pnpm db:generate`, `pnpm db:push` e `pnpm db:se
 | Escrever ou auditar testes | `frontend-qa`: inventário, Playwright, Vitest, relatório de lacunas |
 | Direção visual genuinamente nova, sem convenção a seguir | `frontend-design`: último recurso, nunca ponto de partida |
 
+### Workflow
+
+| Pedido / arquivo | Skill |
+|---|---|
+| Criar uma branch Git a partir da tarefa, definindo origem e nome | `workflow/branch` |
+| Orquestrar worktrees, agentes, merges de tarefas e PRs para develop | `workflow/worktree` |
+| Criar commit | `workflow/commit` |
+| Criar ou abrir pull request | `workflow/pull-request` |
+| Revisar a worktree antes do commit | `workflow/pre-review` |
+
 ## Encadeamento obrigatório
 
 ### Backend
@@ -83,6 +93,8 @@ Exceção permanente (backend): `pnpm db:generate`, `pnpm db:push` e `pnpm db:se
 ## Git: commit e pull request
 
 - Commit: skill `commit`. PR: skill `pull-request`. Carregue ao ouvir "commita", "cria a PR", "sobe isso".
+- Desenvolvimento orquestrado: skill `worktree`; tarefas entram na US, USs entram no épico e épicos entram em `develop`.
+- Nenhuma skill abre PR para `main`; a promoção `develop` → `main` é manual.
 - Revisão pré-commit só quando o dev pedir (`/pre-review`).
 - **O agente nunca é autor nem coautor.** Nada de `Co-Authored-By`, "Generated with", 🤖 ou menção a Claude/IA em commit ou PR, e nunca mexer na autoria. Se parecer necessário, pare e pergunte ao dev.
 - Nunca commitar na `main`, nunca `--no-verify`, nunca force-push.
